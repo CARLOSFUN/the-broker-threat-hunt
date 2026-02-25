@@ -208,39 +208,6 @@ This investigation produced Defender-ready detection patterns:
 
 All KQL queries are stored in the `/queries/` directory.
 
----
-
-## 📁 Repository Structure
-
-the-broker-threat-hunt/
-│
-├── README.md
-├── report/
-│   └── The_Broker_Threat_Hunt_Report.md
-│
-├── queries/
-│   ├── section1-initial-access.kql
-│   ├── section2-command-and-control.kql
-│   ├── section3-credential-access.kql
-│   ├── section4-discovery.kql
-│   ├── section5-persistence-remote-tool.kql
-│   ├── section6-lateral-movement.kql
-│   ├── section7-persistence-scheduled-task.kql
-│   ├── section8-data-access.kql
-│   └── section9-anti-forensics-memory.kql
-│
-├── screenshots/
-│   ├── section1/
-│   ├── section2/
-│   ├── section3/
-│   ├── section4/
-│   ├── section5/
-│   ├── section6/
-│   ├── section7/
-│   ├── section8/
-│   └── section9/
-│
-└── LICENSE
 
 ---
 
