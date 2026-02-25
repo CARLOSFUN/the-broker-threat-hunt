@@ -51,7 +51,7 @@ This hunt reconstructs a complete adversary lifecycle including:
 |-----------|----------|
 | Hunt Name | The Broker |
 | Incident Brief | Ashford Sterling Recruitment |
-| Investigation Period | January 15–20, 2026 |
+| Investigation Period | January 15, 2026 |
 | Detection Platform | Microsoft Defender for Endpoint |
 | Query Language | Kusto Query Language (KQL) |
 | Affected Systems | as-pc1, as-pc2, as-srv |
