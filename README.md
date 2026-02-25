@@ -1,11 +1,3 @@
-Perfect. Below is your complete, clean, copy-paste-ready README.md file for GitHub.
-No formatting issues. No broken anchors. Fully GitHub-compatible Markdown.
-
-You can paste this directly into your repository README.md.
-
-⸻
-
-
 # 🛡️ The Broker
 
 ## Enterprise Multi-Stage Intrusion – Credential Theft, Lateral Movement & Data Staging Investigation
@@ -293,13 +285,3 @@ All artifacts in this repository originate from a controlled lab / simulated Cyb
 ---
 
 ## 🛡️ Defense Through Detection
-
-
-⸻
-
-If you’d like next:
-	•	I can now generate the full Threat_Hunt_Report.md in SOC report format
-	•	Or write a high-impact LinkedIn post to announce this repo
-	•	Or create a clean MITRE visual diagram section
-
-What do you want to build next?
