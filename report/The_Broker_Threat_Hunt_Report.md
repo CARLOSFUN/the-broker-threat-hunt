@@ -194,13 +194,13 @@ The file `Daniel_Richardson_CV.pdf.exe` was identified as the initial infection 
 
 ```kql
 DeviceProcessEvents
-| where Timestamp between (datetime(2026-01-15) .. datetime(2026-01-20))
+| where TimeGenerated  between  (datetime(2026-01-15T00:00:00Z) .. datetime(2026-01-16T00:00:00Z))
 | where DeviceName =~ "as-pc1"
-| where FileName matches regex @"(?i).+\.(pdf|doc|docx|xls|xlsx|zip)\.exe$"
-| project Timestamp, DeviceName, AccountName, FileName,
+| where  InitiatingProcessFileName matches regex @"(?i).+\.(pdf|doc|docx|xls|xlsx|zip)\.exe$"
+| project TimeGenerated, DeviceName, AccountName, FileName,
           FolderPath, ProcessCommandLine, SHA256,
           InitiatingProcessFileName, InitiatingProcessParentFileName
-| order by Timestamp asc
+| order by TimeGenerated asc
 ```
 
 **📸 Screenshot Reference:**
@@ -228,12 +228,11 @@ The SHA256 hash of the initial payload was confirmed as `48b97fd91946e81e3e7742b
 
 ```kql
 DeviceProcessEvents
-| where Timestamp between (datetime(2026-01-15) .. datetime(2026-01-20))
-| where SHA256 == "48b97fd91946e81e3e7742b3554585360551551cbf9398e1f34f4bc4eac3a6b5"
-| project Timestamp, DeviceName, AccountName, FileName,
-          FolderPath, SHA256, ProcessCommandLine,
-          InitiatingProcessFileName
-| order by Timestamp asc
+| where TimeGenerated  between  (datetime(2026-01-15T00:00:00Z) .. datetime(2026-01-16T00:00:00Z))
+| where DeviceName =~ "as-pc1"
+| where  InitiatingProcessFileName matches regex @"(?i).+\.(pdf|doc|docx|xls|xlsx|zip)\.exe$"
+| project TimeGenerated, DeviceName, AccountName, SHA256, InitiatingProcessFileName
+| order by TimeGenerated asc
 ```
 
 **📸 Screenshot Reference:**
