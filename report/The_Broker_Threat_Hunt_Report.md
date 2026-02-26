@@ -231,7 +231,7 @@ DeviceProcessEvents
 | where TimeGenerated  between  (datetime(2026-01-15T00:00:00Z) .. datetime(2026-01-16T00:00:00Z))
 | where DeviceName =~ "as-pc1"
 | where  InitiatingProcessFileName matches regex @"(?i).+\.(pdf|doc|docx|xls|xlsx|zip)\.exe$"
-| project TimeGenerated, DeviceName, AccountName, SHA256, InitiatingProcessFileName
+| project TimeGenerated, DeviceName, AccountName, InitiatingProcessSHA256, InitiatingProcessFileName
 | order by TimeGenerated asc
 ```
 
@@ -260,15 +260,12 @@ The parent process of `Daniel_Richardson_CV.pdf.exe` was `explorer.exe`, confirm
 
 ```kql
 DeviceProcessEvents
-| where Timestamp between (datetime(2026-01-15) .. datetime(2026-01-20))
+| where TimeGenerated  between  (datetime(2026-01-15T00:00:00Z) .. datetime(2026-01-20T00:00:00Z))
 | where DeviceName =~ "as-pc1"
-| where FileName =~ "Daniel_Richardson_CV.pdf.exe"
-    or SHA256 == "48b97fd91946e81e3e7742b3554585360551551cbf9398e1f34f4bc4eac3a6b5"
-| where InitiatingProcessFileName =~ "explorer.exe"
-| project Timestamp, DeviceName, AccountName, FileName,
-          InitiatingProcessFileName, InitiatingProcessCommandLine,
-          InitiatingProcessParentFileName
-| order by Timestamp asc
+| where InitiatingProcessFileName contains "Daniel_Richardson_CV.pdf.exe"
+| project TimeGenerated, DeviceName, AccountName,
+          InitiatingProcessFileName, InitiatingProcessParentFileName
+| order by TimeGenerated asc
 ```
 
 **📸 Screenshot Reference:**
@@ -296,14 +293,14 @@ The malicious payload `Daniel_Richardson_CV.pdf.exe` spawned `notepad.exe` as a 
 
 ```kql
 DeviceProcessEvents
-| where Timestamp between (datetime(2026-01-15) .. datetime(2026-01-20))
+| where TimeGenerated  between (datetime(2026-01-15) .. datetime(2026-01-20))
 | where DeviceName =~ "as-pc1"
 | where InitiatingProcessFileName =~ "Daniel_Richardson_CV.pdf.exe"
     or InitiatingProcessSHA256 == "48b97fd91946e81e3e7742b3554585360551551cbf9398e1f34f4bc4eac3a6b5"
-| project Timestamp, DeviceName, AccountName, FileName,
+| project TimeGenerated, DeviceName, AccountName, FileName,
           ProcessCommandLine, SHA256,
           InitiatingProcessFileName, InitiatingProcessCommandLine
-| order by Timestamp asc
+| order by TimeGenerated asc
 ```
 
 **📸 Screenshot Reference:**
@@ -331,15 +328,14 @@ The spawned `notepad.exe` process executed with the command line `notepad.exe ""
 
 ```kql
 DeviceProcessEvents
-| where Timestamp between (datetime(2026-01-15) .. datetime(2026-01-20))
+| where TimeGenerated  between (datetime(2026-01-15) .. datetime(2026-01-20))
 | where DeviceName =~ "as-pc1"
-| where FileName =~ "notepad.exe"
-    and ProcessCommandLine == "notepad.exe \"\""
-| project Timestamp, DeviceName, AccountName, FileName,
-          ProcessCommandLine, ProcessId,
-          InitiatingProcessFileName, InitiatingProcessId,
-          InitiatingProcessCommandLine
-| order by Timestamp asc
+| where InitiatingProcessFileName =~ "Daniel_Richardson_CV.pdf.exe"
+    or InitiatingProcessSHA256 == "48b97fd91946e81e3e7742b3554585360551551cbf9398e1f34f4bc4eac3a6b5"
+| project TimeGenerated, DeviceName, AccountName, FileName,
+          ProcessCommandLine, SHA256,
+          InitiatingProcessFileName, InitiatingProcessCommandLine
+| order by TimeGenerated asc
 ```
 
 **📸 Screenshot Reference:**
@@ -370,16 +366,14 @@ Outbound network connections were confirmed to `cdn.cloud-endpoint.net`, the pri
 **KQL Query Used:**
 
 ```kql
+let start = datetime(2026-01-15T00:00:00Z);
+let end   = datetime(2026-01-16T00:00:00Z);
 DeviceNetworkEvents
-| where Timestamp between (datetime(2026-01-15) .. datetime(2026-01-20))
 | where DeviceName =~ "as-pc1"
-| where RemoteUrl has "cloud-endpoint.net"
-    or RemoteUrl has "cdn.cloud-endpoint.net"
-| project Timestamp, DeviceName, ActionType, RemoteUrl,
-          RemoteIP, RemotePort, Protocol,
-          InitiatingProcessFileName, InitiatingProcessCommandLine,
-          InitiatingProcessAccountName
-| order by Timestamp asc
+| where TimeGenerated between (start..end)
+| where ActionType in ("ConnectionSuccess","ConnectionAttempt")
+| where isnotempty(RemoteUrl)
+| summarize Hits=count() by RemoteUrl, InitiatingProcessFileName
 ```
 
 **📸 Screenshot Reference:**
