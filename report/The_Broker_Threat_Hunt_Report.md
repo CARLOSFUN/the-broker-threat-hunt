@@ -437,8 +437,7 @@ A secondary domain `sync.cloud-endpoint.net` was used for payload staging — ho
 ```kql
 DeviceNetworkEvents
 | where Timestamp between (datetime(2026-01-15) .. datetime(2026-01-20))
-| where DeviceName =~ "as-pc1"
-| where RemoteUrl has "sync.cloud-endpoint.net"
+| where RemoteUrl has "endpoint.net"
 | project Timestamp, DeviceName, ActionType, RemoteUrl,
           RemoteIP, RemotePort, Protocol,
           InitiatingProcessFileName, InitiatingProcessCommandLine
@@ -509,16 +508,15 @@ The exported hive files were saved to `C:\Users\Public`, a directory that is wor
 **KQL Query Used:**
 
 ```kql
-DeviceFileEvents
+DeviceProcessEvents
 | where Timestamp between (datetime(2026-01-15) .. datetime(2026-01-20))
 | where DeviceName =~ "as-pc1"
-| where FolderPath startswith "C:\\Users\\Public"
-    and (FileName has_any ("SAM", "SYSTEM", "SECURITY")
-         or FileName endswith ".hiv"
-         or FileName endswith ".save")
-| project Timestamp, DeviceName, ActionType, FileName,
-          FolderPath, SHA256, InitiatingProcessFileName,
-          InitiatingProcessAccountName
+| where FileName =~ "reg.exe"
+    and ProcessCommandLine has "save"
+    and ProcessCommandLine has_any ("SAM", "SYSTEM", "SECURITY", "NTDS")
+| project Timestamp, DeviceName, AccountName, FileName,
+          ProcessCommandLine, InitiatingProcessFileName,
+          InitiatingProcessCommandLine, InitiatingProcessSHA256
 | order by Timestamp asc
 ```
 
