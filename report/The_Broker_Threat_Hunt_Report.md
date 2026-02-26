@@ -72,7 +72,7 @@ An adversary gained initial access via a phishing payload and leveraged credenti
 |---|---|
 | **Primary Host** | as-pc1 |
 | **Secondary Hosts** | as-pc2, as-srv |
-| **Timeframe** | 2026-01-15T00:00:00Z — 2026-01-20T23:59:59Z |
+| **Timeframe** | 2026-01-15T00:00:00Z |
 | **Hunt Method** | Hypothesis-driven, pivoting from initial alert through full attack chain |
 | **Total Flags Identified** | 40 across 9 sections |
 
