@@ -22,7 +22,7 @@
 - [Overview](#-overview)
 - [What's Inside](#-whats-inside)
 - [Investigation Summary](#-investigation-summary)
-- [Attack Chain](#-attack-chain)
+- [Attack Chain](#-Attack-Chain)
 - [Key Findings](#-key-findings)
 - [MITRE ATT&CK Coverage](#-mitre-attck-coverage)
 - [Detection Rules](#-detection-rules)
@@ -86,7 +86,7 @@ This hunt reconstructs a complete adversary lifecycle across **9 attack phases**
 ## 📦 What's Inside
 
 ### 📄 SOC Threat Hunt Report
-**Location:** `report/TheBroker_ThreatHuntReport_v3.md`
+**Location:** `report/TheBroker_ThreatHuntReport_.md`
 
 A complete multi-stage investigation report including:
 
@@ -160,7 +160,7 @@ explorer.exe
 
 ---
 
-## ⛓️ Attack Chain
+## Attack Chain
 
 ```
 [Section 1] INITIAL ACCESS
