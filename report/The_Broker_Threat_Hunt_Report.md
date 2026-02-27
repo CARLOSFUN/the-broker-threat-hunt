@@ -799,15 +799,12 @@ The AnyDesk configuration file at `C:\Users\Sophie.Turner\AppData\Roaming\AnyDes
 **KQL Query Used:**
 
 ```kql
-DeviceFileEvents
-| where Timestamp between (datetime(2026-01-15) .. datetime(2026-01-20))
-| where DeviceName =~ "as-pc1"
-| where FolderPath has "AnyDesk"
-    and FileName =~ "system.conf"
-| project Timestamp, DeviceName, ActionType, FileName,
-          FolderPath, InitiatingProcessFileName,
-          InitiatingProcessAccountName, InitiatingProcessCommandLine
-| order by Timestamp asc
+DeviceProcessEvents
+| where TimeGenerated between (datetime(2026-01-15T00:00:00Z) .. datetime(2026-01-16T23:59:59Z))
+| where DeviceName has_any ("as-pc2", "as-pc1", "as-srv")
+| where ProcessCommandLine contains ".conf"
+| project TimeGenerated, DeviceName, AccountName, FileName, ProcessCommandLine, ActionType
+| order by TimeGenerated asc
 ```
 
 **📸 Screenshot Reference:**
