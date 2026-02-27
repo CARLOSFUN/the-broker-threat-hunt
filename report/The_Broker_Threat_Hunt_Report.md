@@ -1388,9 +1388,7 @@ An archive file `Shares.7z` was created, packaging collected data for potential 
 DeviceFileEvents
 | where Timestamp between (datetime(2026-01-15) .. datetime(2026-01-20))
 | where DeviceName in~ ("as-pc2", "as-srv")
-| where FileName endswith ".7z" or FileName endswith ".zip"
-    or FileName endswith ".rar" or FileName endswith ".tar"
-    or FileName =~ "Shares.7z"
+| where FileName =~ "Shares.7z"
 | project Timestamp, DeviceName, ActionType, FileName,
           FolderPath, SHA256, InitiatingProcessFileName,
           InitiatingProcessAccountName
