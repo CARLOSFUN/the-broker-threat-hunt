@@ -310,7 +310,7 @@ The-Broker/
 ├── README.md                          ← You are here
 │
 ├── report/
-│   └── TheBroker_ThreatHuntReport_v3.md   ← Full 40-flag SOC report
+│   └── The_Broker_Threat_Hunt_Report.md  ← Full 40-flag SOC report
 │
 ├── screenshots/
 │   ├── section1_initial_access/
@@ -362,17 +362,6 @@ The-Broker/
 │       ├── F38_reflective_loading.png
 │       ├── F39_sharpchrme.png
 │       └── F40_host_process.png
-│
-└── queries/
-    ├── section1_initial_access.kql
-    ├── section2_c2.kql
-    ├── section3_credential_access.kql
-    ├── section4_discovery.kql
-    ├── section5_persistence_remote_tool.kql
-    ├── section6_lateral_movement.kql
-    ├── section7_persistence_scheduled_task.kql
-    ├── section8_data_access.kql
-    └── section9_anti_forensics_memory.kql
 ```
 
 ---
@@ -428,3 +417,4 @@ All artifacts in this repository originate from a **controlled lab / simulated C
 ## 🛡️ Defense Through Detection
 
 *Carlos Funezsanchez | SOC Analyst | TLP:AMBER*
+](https://github.com/CARLOSFUN/the-broker-threat-hunt/blob/main/report/The_Broker_Threat_Hunt_Report.md)
