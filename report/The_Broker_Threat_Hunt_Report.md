@@ -831,14 +831,13 @@ AnyDesk was configured with the unattended access password `intrud3r!`, enabling
 **KQL Query Used:**
 
 ```kql
-// Hunt for AnyDesk password configuration via command line or file write
 DeviceProcessEvents
 | where Timestamp between (datetime(2026-01-15) .. datetime(2026-01-20))
 | where FileName =~ "AnyDesk.exe"
     and ProcessCommandLine has_any ("--set-password", "--install",
                                     "--silent", "password")
 | project Timestamp, DeviceName, AccountName, ProcessCommandLine,
-          InitiatingProcessFileName
+          InitiatingProcessCommandLine
 | order by Timestamp asc
 ```
 
@@ -973,25 +972,12 @@ After failing with psexec and wmic, the attacker successfully pivoted using `mst
 **KQL Query Used:**
 
 ```kql
-// mstsc.exe execution on source host
 DeviceProcessEvents
-| where Timestamp between (datetime(2026-01-15) .. datetime(2026-01-20))
-| where DeviceName =~ "as-pc1"
-| where FileName =~ "mstsc.exe"
-| project Timestamp, DeviceName, AccountName, FileName,
-          ProcessCommandLine, InitiatingProcessFileName
-| order by Timestamp asc
-```
-
-```kql
-// Incoming RDP logon on target hosts
-DeviceLogonEvents
-| where Timestamp between (datetime(2026-01-15) .. datetime(2026-01-20))
-| where DeviceName in~ ("as-pc2", "as-srv")
-| where LogonType == "RemoteInteractive"
-| project Timestamp, DeviceName, AccountName, LogonType,
-          RemoteIP, ActionType, InitiatingProcessFileName
-| order by Timestamp asc
+| where TimeGenerated between (datetime(2026-01-15T00:00:00Z) .. datetime(2026-01-16T23:59:59Z))
+| where IsProcessRemoteSession == true
+| where FileName contains "mstsc.exe"
+| project TimeGenerated, DeviceName, AccountName, FileName, ProcessCommandLine
+| order by TimeGenerated asc
 ```
 
 **📸 Screenshot Reference:**
@@ -1021,10 +1007,9 @@ The complete lateral movement path was confirmed as `as-pc1 → as-pc2 → as-sr
 DeviceLogonEvents
 | where Timestamp between (datetime(2026-01-15) .. datetime(2026-01-20))
 | where DeviceName in~ ("as-pc1", "as-pc2", "as-srv")
-| where LogonType == "RemoteInteractive"
 | project Timestamp, DeviceName, AccountName, LogonType,
           RemoteIP, ActionType
-| order by Timestamp asc
+| summarize by DeviceName
 ```
 
 **📸 Screenshot Reference:**
@@ -1095,7 +1080,7 @@ DeviceProcessEvents
 ```
 
 **📸 Screenshot Reference:**
-> Screenshot F26 — `net user david.mitchell /active:yes` command visible in process telemetry confirming account activation
+> Screenshot F26 — `net user Administrator /active:yes` command visible in process telemetry confirming account activation
 
 **Analyst Assessment:**
 Re-enabling a disabled account is a high-fidelity, high-severity indicator of malicious activity. No legitimate business process should be re-enabling accounts via command line without change management. This event alone should be a critical alert in any SOC. The fact that `david.mitchell` was disabled suggests it was a previously deprovisioned account, making its re-activation even more suspicious.
@@ -1248,18 +1233,17 @@ The hash match enables enterprise-wide hunting: any file with this SHA256 anywhe
 | **Severity** | 🔴 Critical |
 | **MITRE Tactic** | Persistence (TA0003) |
 | **MITRE Technique** | Create Account: Local Account (T1136.001) |
-| **Host Affected** | as-pc2 |
+| **Host Affected** | as-pc1 |
 | **Confidence** | High |
 
 **What Was Found:**
-A new local account named `svc_backup` was created on as-pc2. The service-account naming convention (`svc_`) is deliberate — it mimics legitimate service accounts commonly found in enterprise environments, reducing the likelihood of the account being flagged during routine IT audits. This account provides an authentication mechanism that survives AnyDesk removal and scheduled task deletion.
+A new local account named `svc_backup` was created on as-pc1. The service-account naming convention (`svc_`) is deliberate — it mimics legitimate service accounts commonly found in enterprise environments, reducing the likelihood of the account being flagged during routine IT audits. This account provides an authentication mechanism that survives AnyDesk removal and scheduled task deletion.
 
 **KQL Query Used:**
 
 ```kql
 DeviceProcessEvents
 | where Timestamp between (datetime(2026-01-15) .. datetime(2026-01-20))
-| where DeviceName =~ "as-pc2"
 | where FileName in~ ("net.exe", "net1.exe")
     and ProcessCommandLine has_all ("user", "/add")
 | project Timestamp, DeviceName, AccountName, FileName,
@@ -1269,7 +1253,7 @@ DeviceProcessEvents
 ```
 
 **📸 Screenshot Reference:**
-> Screenshot F31 — `net user svc_backup /add` command visible in process telemetry on as-pc2
+> Screenshot F31 — `net user svc_backup /add` command visible in process telemetry on as-pc1
 
 **Analyst Assessment:**
 The `svc_backup` account represents the third distinct persistence mechanism deployed in this intrusion (alongside AnyDesk and the scheduled task). A thorough remediation must address all three layers simultaneously. The account should be immediately disabled and deleted, and all authentication events associated with it reviewed across the environment.
