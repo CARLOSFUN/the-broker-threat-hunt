@@ -305,7 +305,7 @@ This investigation produced the following **Microsoft Defender-ready detection p
 ## 📁 Repository Structure
 
 ```
-The-Broker/
+the-broker-threat-hunt/
 │
 ├── README.md                          ← You are here
 │
