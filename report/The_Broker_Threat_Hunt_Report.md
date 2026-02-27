@@ -1357,7 +1357,7 @@ DeviceFileEvents
     or FileName startswith ".~lock.BACS_Payments"
 | project Timestamp, DeviceName, ActionType, FileName,
           FolderPath, InitiatingProcessAccountName,
-          InitiatingProcessFileName, RemoteIP
+          InitiatingProcessFileName, InitiatingProcessRemoteSessionIP
 | order by Timestamp asc
 ```
 
