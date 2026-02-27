@@ -22,7 +22,7 @@
 - [Overview](#-overview)
 - [What's Inside](#-whats-inside)
 - [Investigation Summary](#-investigation-summary)
-- [Attack Chain](#-Attack-Chain)
+- [Attack Chain](#-attack-chain)
 - [Key Findings](#-key-findings)
 - [MITRE ATT&CK Coverage](#-mitre-attck-coverage)
 - [Detection Rules](#-detection-rules)
