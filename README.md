@@ -1,4 +1,4 @@
-# 🛡️ The Broker — Enterprise Threat Hunt
+# 🛡️ The Broker — Threat Hunt
 
 <div align="center">
 
@@ -8,7 +8,19 @@
 ![MITRE ATT&CK](https://img.shields.io/badge/Framework-MITRE%20ATT%26CK-green?style=for-the-badge)
 ![Flags](https://img.shields.io/badge/Flags-40%20Documented-purple?style=for-the-badge)
 
-**Full enterprise compromise investigated across 40 flags and 9 attack phases — from malicious CV execution to in-memory credential theft and payroll data staging.**
+**Full enterprise compromise investigated across 40 flags and 9 attack phases from malicious CV execution to in-memory credential theft and payroll data staging.**
+
+</div>
+
+---
+
+## 📄 Read the Full Report
+
+<div align="center">
+
+[![View Full Report](https://img.shields.io/badge/📄%20View%20Full%20Report-Click%20Here-blue?style=for-the-badge)](report/The_Broker_Threat_Hunt_Report.md)
+
+*40 flags · 9 sections · KQL queries · screenshots · MITRE mapping · IOC table · recommendations*
 
 </div>
 
@@ -74,19 +86,6 @@
 | Accounts Abused | `sophie.turner`, `david.mitchell`, `svc_backup` |
 | MDE Signal | `ClrUnbackedModuleLoaded` (SharpChrome in-memory) |
 
----
-
-## 📄 Read the Full Report
-
-<div align="center">
-
-[![View Full Report](https://img.shields.io/badge/📄%20View%20Full%20Report-Click%20Here-blue?style=for-the-badge)](report/The_Broker_Threat_Hunt_Report.md)
-
-*40 flags · 9 sections · KQL queries · screenshots · MITRE mapping · IOC table · recommendations*
-
-</div>
-
----
 
 ## What's Inside
 
