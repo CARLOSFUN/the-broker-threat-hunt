@@ -9,14 +9,9 @@
 | **Query Language** | Kusto Query Language (KQL) |
 | **Timeframe Investigated** | January 15 2026 |
 | **Analyst** | Carlos Funezsanchez |
-| **Classification** | TLP:AMBER |
 | **Version** | 1.0 |
 | **Report Date** | 25 February 2026 |
 | **Total Flags** | 40 |
-
----
-
-> **TLP:AMBER** — Distribution limited to participating organisations and authorised SOC personnel only.
 
 ---
 
@@ -203,8 +198,7 @@ DeviceProcessEvents
 | order by TimeGenerated asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F01 — `Daniel_Richardson_CV.pdf.exe` visible in DeviceProcessEvents with double-extension filename confirmed on as-pc1
+![F01 - Daniel_Richardson_CV.pdf.exe visible in DeviceProcessEvents with double-extension filename confirmed on as-pc1](../screenshots/section1_initial_access/F01_malicious_cv_execution.png)
 
 **Analyst Assessment:**
 The deliberate targeting of a recruitment organisation with a CV-themed lure demonstrates pre-operational intelligence gathering. The attacker understood the environment and weaponised a file type that would be routinely opened without suspicion. This is the entry point for the entire compromise chain.
@@ -235,8 +229,7 @@ DeviceProcessEvents
 | order by TimeGenerated asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F02 — SHA256 hash `48b97fd9...` visible alongside `Daniel_Richardson_CV.pdf.exe` in process telemetry on as-pc1
+![F02 - SHA256 hash 48b97fd9... visible alongside Daniel_Richardson_CV.pdf.exe in process telemetry on as-pc1](../screenshots/section1_initial_access/F02_payload_hash.png)
 
 **Analyst Assessment:**
 Hash confirmation is critical for threat intelligence enrichment and cross-host hunting. The reuse of this binary hash across initial access (F01) and persistence (F30) indicates a single-toolkit intrusion, simplifying detection — any instance of this hash anywhere in the environment should be treated as a confirmed compromise indicator.
@@ -268,8 +261,7 @@ DeviceProcessEvents
 | order by TimeGenerated asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F03 — Process tree showing `explorer.exe` as parent of `Daniel_Richardson_CV.pdf.exe` on as-pc1
+![F03 - Process tree showing explorer.exe as parent of Daniel_Richardson_CV.pdf.exe on as-pc1](../screenshots/section1_initial_access/F03_explorer_parent.png)
 
 **Analyst Assessment:**
 User execution via Explorer is the most common delivery mechanism for phishing payloads. The `sophie.turner` account was used, meaning all subsequent activity in this section executes under her privilege context. This confirms a successful social engineering component and points to a need for user awareness training targeting recruitment staff.
@@ -303,8 +295,7 @@ DeviceProcessEvents
 | order by TimeGenerated asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F04 — Process tree showing `Daniel_Richardson_CV.pdf.exe` spawning `notepad.exe` as child process on as-pc1
+![F04 - Process tree showing Daniel_Richardson_CV.pdf.exe spawning notepad.exe as child process on as-pc1](../screenshots/section1_initial_access/F04_notepad_child.png)
 
 **Analyst Assessment:**
 The spawning of `notepad.exe` by a document-mimicking executable is a strong indicator of malicious injection staging. Legitimate software never follows this parent-child relationship. The consistent use of `notepad.exe` across the intrusion (F04, F05, F40) confirms it was deliberately selected as a trusted host process to blend malicious activity within a known-good application.
@@ -338,8 +329,7 @@ DeviceProcessEvents
 | order by TimeGenerated asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F05 — `notepad.exe ""` command line visible in telemetry, parent process `Daniel_Richardson_CV.pdf.exe` confirmed
+![F05 - notepad.exe "" command line visible in telemetry, parent process Daniel_Richardson_CV.pdf.exe confirmed](../screenshots/section1_initial_access/F05_empty_args.png)
 
 **Analyst Assessment:**
 The `notepad.exe ""` command line is a high-fidelity indicator of malicious intent. No legitimate user or application spawns Notepad with empty quoted arguments. This specific pattern should be deployed as a detection rule across the environment. The ProcessId from this event should be correlated with the `ClrUnbackedModuleLoaded` event in F38/F40 to confirm injection continuity.
@@ -376,8 +366,7 @@ DeviceNetworkEvents
 | summarize Hits=count() by RemoteUrl, InitiatingProcessFileName
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F06 — Outbound connection to `cdn.cloud-endpoint.net` visible in DeviceNetworkEvents with remote IP and port confirmed
+![F06 - Outbound connection to cdn.cloud-endpoint.net visible in DeviceNetworkEvents with remote IP and port confirmed](../screenshots/section2_c2/F06_c2_domain.png)
 
 **Analyst Assessment:**
 The use of a CDN-spoofing domain name indicates pre-planned infrastructure and awareness of common network monitoring practices. Active C2 confirms this is an operator-controlled intrusion. The domain should be blocked at DNS and perimeter firewall immediately, and all other hosts in the environment should be queried for connections to `cloud-endpoint.net`.
@@ -411,8 +400,7 @@ DeviceNetworkEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F07 — `daniel_richardson_cv.pdf.exe` visible as `InitiatingProcessFileName` in network connection events to C2 infrastructure
+![F07 - daniel_richardson_cv.pdf.exe visible as InitiatingProcessFileName in network connection events to C2 infrastructure](../screenshots/section2_c2/F07_c2_process.png)
 
 **Analyst Assessment:**
 Confirming the initiating process closes the loop between the execution chain (F01–F05) and the network activity. The payload acts as a full implant — not merely a dropper that delivers another tool. This means as long as the process is running, the attacker has live access to the compromised host.
@@ -444,8 +432,7 @@ DeviceNetworkEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F08 — Outbound connection to `sync.cloud-endpoint.net` visible in network telemetry, distinct from C2 domain in F06
+![F08 - Outbound connection to sync.cloud-endpoint.net visible in network telemetry, distinct from C2 domain in F06](../screenshots/section2_c2/F08_staging_domain.png)
 
 **Analyst Assessment:**
 The use of separate C2 and staging subdomains indicates organised infrastructure management. The staging domain likely served AnyDesk, SharpChrome, or other tools downloaded during the intrusion. Both domains must be blocked and the full `cloud-endpoint.net` domain should be sinkholed or added to threat intelligence feeds.
@@ -484,8 +471,7 @@ DeviceProcessEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F09 — `reg.exe save HKLM\SAM` and `reg.exe save HKLM\SYSTEM` commands visible in process telemetry on as-pc1
+![F09 - reg.exe save HKLM\SAM and reg.exe save HKLM\SYSTEM commands visible in process telemetry on as-pc1](../screenshots/section3_credential_access/F09_hive_dump.png)
 
 **Analyst Assessment:**
 This is the pivotal stage that converted a single-host compromise into an enterprise threat. The extracted credential material directly enabled the lateral movement in Section 6. All local account credentials on as-pc1 must be treated as fully compromised. Domain credentials cached on this host are also at risk.
@@ -520,8 +506,7 @@ DeviceProcessEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F10 — Hive files created in `C:\Users\Public` visible in DeviceFileEvents on as-pc1
+![F10 - Hive files created in C:\Users\Public visible in DeviceFileEvents on as-pc1](../screenshots/section3_credential_access/F10_staging_path.png)
 
 **Analyst Assessment:**
 The staging of credential files in `C:\Users\Public` is a deliberate operational choice. Any subsequent network activity from this host carrying files of unusual size from this path should be investigated as potential credential exfiltration. Monitoring `C:\Users\Public` for binary or hive file drops should be a standing detection rule.
@@ -555,8 +540,7 @@ DeviceProcessEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F11 — `AccountName: sophie.turner` visible alongside `reg save` commands in process telemetry
+![F11 - AccountName: sophie.turner visible alongside reg save commands in process telemetry](../screenshots/section3_credential_access/F11_execution_identity.png)
 
 **Analyst Assessment:**
 Identifying `sophie.turner` as the execution identity confirms her account is fully compromised and her credentials should be reset immediately. Her account having sufficient privileges to dump registry hives suggests overly permissive local rights. A review of local administrator group membership on as-pc1 is recommended.
@@ -595,8 +579,7 @@ DeviceProcessEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F12 — `whoami.exe` execution visible in process telemetry on as-pc1 with unusual parent process
+![F12 - whoami.exe execution visible in process telemetry on as-pc1 with unusual parent process](../screenshots/section4_discovery/F12_whoami.png)
 
 **Analyst Assessment:**
 While `whoami.exe` is a low-severity individual event, in context it confirms active operator presence performing manual reconnaissance. When correlated with the surrounding credential dump and discovery activity, it forms part of a clear situational awareness phase immediately preceding lateral movement.
@@ -631,8 +614,7 @@ DeviceProcessEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F13 — `net.exe view` command visible in process telemetry on as-pc1
+![F13 - net.exe view command visible in process telemetry on as-pc1](../screenshots/section4_discovery/F13_net_view.png)
 
 **Analyst Assessment:**
 Network share enumeration at this stage of the attack chain directly informed the attacker's targeting decision in Section 8. The identified file server as-srv likely appeared in the `net view` output, directing subsequent lateral movement toward that host. Share enumeration from non-admin processes should trigger an alert in production.
@@ -667,8 +649,7 @@ DeviceProcessEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F14 — `net localgroup administrators` command visible in process telemetry on as-pc1
+![F14 - net localgroup administrators command visible in process telemetry on as-pc1](../screenshots/section4_discovery/F14_admins_enum.png)
 
 **Analyst Assessment:**
 Administrators group enumeration is a high-value reconnaissance step that directly enables privilege escalation and targeted credential theft. The output of this command would have identified `david.mitchell` or other privileged accounts whose credentials were subsequently extracted from the SAM hive and used for lateral movement. This event in isolation warrants investigation when observed outside normal administrative workflows.
@@ -705,8 +686,7 @@ DeviceFileEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F15 — AnyDesk.exe file creation events visible on as-pc1, as-pc2, and as-srv in DeviceFileEvents
+![F15 - AnyDesk.exe file creation events visible on as-pc1, as-pc2, and as-srv in DeviceFileEvents](../screenshots/section5_persistence_remote_tool/F15_anydesk_deploy.png)
 
 **Analyst Assessment:**
 Enterprise-wide deployment of AnyDesk with a hardcoded unattended password provides the attacker full graphical remote access to every host in scope, independent of the original payload. Even complete remediation of the initial malware would leave this access path intact. All AnyDesk instances must be removed as an immediate priority.
@@ -737,8 +717,7 @@ DeviceFileEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F16 — SHA256 `f42b635d...` confirmed alongside AnyDesk.exe in file event telemetry across all three hosts
+![F16 - SHA256 f42b635d... confirmed alongside AnyDesk.exe in file event telemetry across all three hosts](../screenshots/section5_persistence_remote_tool/F16_anydesk_hash.png)
 
 **Analyst Assessment:**
 The hash should be submitted to threat intelligence platforms (with appropriate operational security) to determine if this binary is a known trojanised variant. A modified AnyDesk installer could contain additional backdoor functionality beyond standard remote access capability.
@@ -775,8 +754,7 @@ DeviceProcessEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F17 — `certutil.exe` with URL download arguments visible in process telemetry on as-pc1, showing download source URL
+![F17 - certutil.exe with URL download arguments visible in process telemetry on as-pc1, showing download source URL](../screenshots/section5_persistence_remote_tool/F17_certutil_download.png)
 
 **Analyst Assessment:**
 `certutil.exe` performing URL-based downloads is almost never legitimate in a managed enterprise environment. This should be an immediate, high-confidence alert in any SIEM or EDR. The download URL (from the staging domain `sync.cloud-endpoint.net`) should be documented and blocked. ASR rules can be configured to block certutil from making network connections.
@@ -807,8 +785,7 @@ DeviceProcessEvents
 | order by TimeGenerated asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F18 — `system.conf` access/modification event visible in DeviceFileEvents under AnyDesk AppData path for `sophie.turner`
+![F18 - system.conf access/modification event visible in DeviceFileEvents under AnyDesk AppData path for sophie.turner](../screenshots/section5_persistence_remote_tool/F18_config_access.png)
 
 **Analyst Assessment:**
 The specific targeting of the AnyDesk configuration file confirms intentional persistence configuration rather than opportunistic tool installation. The path under `sophie.turner`'s AppData further confirms her account context was used throughout this phase.
@@ -841,8 +818,7 @@ DeviceProcessEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F19 — AnyDesk unattended password configuration visible in process arguments or config file content on as-pc1
+![F19 - AnyDesk unattended password configuration visible in process arguments or config file content on as-pc1](../screenshots/section5_persistence_remote_tool/F19_unattended_password.png)
 
 **Analyst Assessment:**
 The password `intrud3r!` should be treated as a known adversary indicator. Any AnyDesk instance in the environment using this password — or any device connecting to these hosts via AnyDesk — should be investigated. The credential should also be checked against other services in the environment in case of password reuse.
@@ -876,8 +852,7 @@ DeviceFileEvents
             by SHA256, FileName
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F20 — Summary view showing AnyDesk deployment confirmed on as-pc1, as-pc2, and as-srv with timestamps
+![F20 - Summary view showing AnyDesk deployment confirmed on as-pc1, as-pc2, and as-srv with timestamps](../screenshots/section5_persistence_remote_tool/F20_deployment_footprint.png)
 
 **Analyst Assessment:**
 The confirmed three-host deployment footprint demonstrates the attacker's intent for long-term access across the full environment. Remediation must address all three hosts simultaneously — sequential remediation risks the attacker re-establishing access from a host that hasn't yet been cleaned.
@@ -914,8 +889,7 @@ DeviceProcessEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F21 — `psexec.exe` and `wmic.exe` execution attempts visible in process telemetry on as-pc1
+![F21 - psexec.exe and wmic.exe execution attempts visible in process telemetry on as-pc1](../screenshots/section6_lateral_movement/F21_failed_tools.png)
 
 **Analyst Assessment:**
 The failure of psexec and wmic indicates the environment had some level of protection against common lateral movement tools — whether through network segmentation, endpoint controls, or credential restrictions. However, the attacker adapted rather than abandoning the objective, demonstrating persistence and operational flexibility.
@@ -948,8 +922,7 @@ DeviceProcessEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F22 — `psexec.exe` or `wmic.exe` command line showing `as-pc2` as target hostname
+![F22 - psexec.exe or wmic.exe command line showing as-pc2 as target hostname](../screenshots/section6_lateral_movement/F22_target_host.png)
 
 **Analyst Assessment:**
 Identifying as-pc2 as the intended first pivot point confirms the attacker had already mapped the network sufficiently to know their intended movement path. The failed attempts left evidence in telemetry that the successful RDP pivot (F23) may have otherwise partially obscured.
@@ -980,8 +953,7 @@ DeviceProcessEvents
 | order by TimeGenerated asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F23 — `mstsc.exe` execution on as-pc1 and corresponding RemoteInteractive logon event on as-pc2 visible in telemetry
+![F23 - mstsc.exe execution on as-pc1 and corresponding RemoteInteractive logon event on as-pc2 visible in telemetry](../screenshots/section6_lateral_movement/F23_rdp_pivot.png)
 
 **Analyst Assessment:**
 The switch from psexec/wmic to native RDP demonstrates attacker adaptability. RDP lateral movement using valid credentials is one of the hardest behaviours to detect without a strong behavioural baseline — the traffic looks identical to legitimate administrator activity. This reinforces the need for MFA on all RDP sessions.
@@ -1012,8 +984,7 @@ DeviceLogonEvents
 | summarize by DeviceName
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F24 — Sequential RemoteInteractive logon events showing progression from as-pc1 → as-pc2 → as-srv with timestamps confirming movement order
+![F24 - Sequential RemoteInteractive logon events showing progression from as-pc1 to as-pc2 to as-srv with timestamps confirming movement order](../screenshots/section6_lateral_movement/F24_movement_path.png)
 
 **Analyst Assessment:**
 The two-hop movement path suggests the environment may have some network segmentation that restricted direct access from as-pc1 to as-srv. However, this segmentation was insufficient to prevent ultimate access to the file server. Network access controls between workstations and servers should be reviewed.
@@ -1045,8 +1016,7 @@ DeviceLogonEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F25 — `david.mitchell` RemoteInteractive logon events on as-pc2 and as-srv visible in DeviceLogonEvents
+![F25 - david.mitchell RemoteInteractive logon events on as-pc2 and as-srv visible in DeviceLogonEvents](../screenshots/section6_lateral_movement/F25_compromised_account.png)
 
 **Analyst Assessment:**
 The `david.mitchell` account must be treated as fully compromised. All sessions, tokens, and cached credentials associated with this account across the environment should be invalidated immediately. The account should be disabled pending investigation and credential reset.
@@ -1079,8 +1049,7 @@ DeviceProcessEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F26 — `net user Administrator /active:yes` command visible in process telemetry confirming account activation
+![F26 - net user /active:yes command visible in process telemetry confirming account activation](../screenshots/section6_lateral_movement/F26_account_activation.png)
 
 **Analyst Assessment:**
 Re-enabling a disabled account is a high-fidelity, high-severity indicator of malicious activity. No legitimate business process should be re-enabling accounts via command line without change management. This event alone should be a critical alert in any SOC. The fact that `david.mitchell` was disabled suggests it was a previously deprovisioned account, making its re-activation even more suspicious.
@@ -1112,8 +1081,7 @@ DeviceProcessEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F27 — Account activation command showing `AccountName: david.mitchell` as the executing user context — account activating itself
+![F27 - Account activation command showing AccountName: david.mitchell as the executing user context — account activating itself](../screenshots/section6_lateral_movement/F27_activation_context.png)
 
 **Analyst Assessment:**
 This self-activation pattern is a forensically significant indicator that confirms offline credential extraction preceded this action. The attacker extracted the hash, cracked or used it via pass-the-hash to authenticate as `david.mitchell`, then re-enabled the account for persistent interactive use. This confirms the credential dump in Section 3 was operationally successful.
@@ -1151,8 +1119,7 @@ DeviceProcessEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F28 — `schtasks.exe /create` with task name `MicrosoftEdgeUpdateCheck` visible in full command line on as-pc2
+![F28 - schtasks.exe /create with task name MicrosoftEdgeUpdateCheck visible in full command line on as-pc2](../screenshots/section7_persistence_scheduled_task/F28_scheduled_task.png)
 
 **Analyst Assessment:**
 Scheduled task creation with a Microsoft-mimicking name is a well-established persistence technique. The placement on as-pc2 — the lateral movement waypoint — rather than the initial access host suggests the attacker was establishing redundant persistence at a different point in the network to survive potential remediation of as-pc1.
@@ -1186,8 +1153,7 @@ DeviceFileEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F29 — `RuntimeBroker.exe` created outside of `C:\Windows\System32` visible in DeviceFileEvents on as-pc2
+![F29 - RuntimeBroker.exe created outside of C:\Windows\System32 visible in DeviceFileEvents on as-pc2](../screenshots/section7_persistence_scheduled_task/F29_renamed_binary.png)
 
 **Analyst Assessment:**
 The key detection insight for this finding is path-based: legitimate `RuntimeBroker.exe` runs exclusively from `C:\Windows\System32`. Any instance of `RuntimeBroker.exe` running from any other path is definitively malicious. The hash match (F30) provides additional confirmation. Path-and-hash combination rules for known Windows process names are a high-value detection opportunity.
@@ -1218,8 +1184,7 @@ DeviceFileEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F30 — Hash `48b97fd9...` confirmed on `RuntimeBroker.exe` on as-pc2, matching initial payload hash from F02
+![F30 - Hash 48b97fd9... confirmed on RuntimeBroker.exe on as-pc2, matching initial payload hash from F02](../screenshots/section7_persistence_scheduled_task/F30_hash_match.png)
 
 **Analyst Assessment:**
 The hash match enables enterprise-wide hunting: any file with this SHA256 anywhere in the environment is malicious and part of this intrusion. This should immediately be added to EDR block lists and SIEM correlation rules. The single-binary approach simplifies remediation but confirms the attacker prioritised operational simplicity over evasion diversity.
@@ -1252,8 +1217,7 @@ DeviceProcessEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F31 — `net user svc_backup /add` command visible in process telemetry on as-pc1
+![F31 - net user svc_backup /add command visible in process telemetry on as-pc1](../screenshots/section7_persistence_scheduled_task/F31_backdoor_account.png)
 
 **Analyst Assessment:**
 The `svc_backup` account represents the third distinct persistence mechanism deployed in this intrusion (alongside AnyDesk and the scheduled task). A thorough remediation must address all three layers simultaneously. The account should be immediately disabled and deleted, and all authentication events associated with it reviewed across the environment.
@@ -1292,8 +1256,7 @@ DeviceFileEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F32 — `BACS_Payments_Dec2025.ods` file access event visible in DeviceFileEvents on as-srv with accessing account context
+![F32 - BACS_Payments_Dec2025.ods file access event visible in DeviceFileEvents on as-srv with accessing account context](../screenshots/section8_data_access/F32_bacs_access.png)
 
 **Analyst Assessment:**
 Access to BACS payment data is the clearest indicator of financial motivation in this intrusion. The finance team must be immediately notified to review December 2025 payment runs for any unauthorised modifications or redirections. Regulatory notification obligations (e.g. ICO under UK GDPR) should be assessed given the sensitivity of the accessed data.
@@ -1327,8 +1290,7 @@ DeviceFileEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F33 — `.~lock.BACS_Payments_Dec2025.ods#` file creation event visible in DeviceFileEvents on as-srv, confirming document was opened for editing
+![F33 - .~lock.BACS_Payments_Dec2025.ods# file creation event visible in DeviceFileEvents on as-srv, confirming document was opened for editing](../screenshots/section8_data_access/F33_lock_file.png)
 
 **Analyst Assessment:**
 The lock file artifact is the single most significant finding for determining attacker intent. The distinction between viewing and editing is critical: if payment account numbers or amounts were modified, this is active financial fraud rather than data theft. The finance team must compare the current state of `BACS_Payments_Dec2025.ods` against backup copies from before January 15, 2026 to identify any unauthorised modifications.
@@ -1361,8 +1323,7 @@ DeviceFileEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F34 — File access event on as-srv showing origin IP or hostname matching as-pc2, confirming remote access source
+![F34 - File access event on as-srv showing origin IP or hostname matching as-pc2, confirming remote access source](../screenshots/section8_data_access/F34_access_origin.png)
 
 **Analyst Assessment:**
 Tracing the access origin to as-pc2 completes the lateral movement chain and confirms the two-hop architecture the attacker used. This finding validates the lateral movement reconstruction in Section 6 and demonstrates that as-pc2's compromise was a deliberate waypoint toward the financial data target.
@@ -1395,8 +1356,7 @@ DeviceFileEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F35 — `Shares.7z` file creation event visible in DeviceFileEvents with file size and creation timestamp
+![F35 - Shares.7z file creation event visible in DeviceFileEvents with file size and creation timestamp](../screenshots/section8_data_access/F35_archive_created.png)
 
 **Analyst Assessment:**
 Archive creation immediately following sensitive document access is a strong pre-exfiltration indicator. Network telemetry should be reviewed for large outbound transfers from as-pc2 or as-srv following the archive creation timestamp. It is currently unknown whether exfiltration was completed — this must be determined through network log analysis.
@@ -1427,8 +1387,7 @@ DeviceFileEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F36 — `Shares.7z` with SHA256 `6886c0a2...` visible in DeviceFileEvents confirming archive identity
+![F36 - Shares.7z with SHA256 6886c0a2... visible in DeviceFileEvents confirming archive identity](../screenshots/section8_data_access/F36_archive_hash.png)
 
 **Analyst Assessment:**
 The archive hash should be retained as a primary forensic indicator. If this hash appears in network flow data (e.g. in TLS fingerprinting or proxy logs), it confirms the archive was transmitted outbound. The hash should be added to all threat intelligence platforms and shared with relevant information sharing communities under TLP:AMBER.
@@ -1477,8 +1436,7 @@ DeviceEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F37 — `wevtutil.exe cl Security` and `wevtutil.exe cl System` commands visible in process telemetry, or `SecurityLogCleared` ActionType event in DeviceEvents
+![F37 - wevtutil.exe cl Security and wevtutil.exe cl System commands visible in process telemetry, or SecurityLogCleared ActionType event in DeviceEvents](../screenshots/section9_anti_forensics_memory/F37_log_clearing.png)
 
 **Analyst Assessment:**
 Despite the log clearing, Microsoft Defender for Endpoint streams telemetry independently to the cloud, meaning the clearing activity itself was captured — illustrating the resilience advantage of cloud-native EDR. The log clearing also indicates the attacker was aware of forensic investigation risk and took deliberate steps to impede it, further confirming a sophisticated, experienced operator.
@@ -1512,8 +1470,7 @@ DeviceEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F38 — `ClrUnbackedModuleLoaded` ActionType event visible in DeviceEvents on as-pc1 with initiating process details
+![F38 - ClrUnbackedModuleLoaded ActionType event visible in DeviceEvents on as-pc1 with initiating process details](../screenshots/section9_anti_forensics_memory/F38_reflective_loading.png)
 
 **Analyst Assessment:**
 `ClrUnbackedModuleLoaded` is a high-fidelity detection signal — false positives are rare in managed enterprise environments. This event type should be alerted on as Critical in all SOC detection rules. The AdditionalFields column in this event may contain the module name or partial assembly information that further confirms SharpChrome.
@@ -1548,8 +1505,7 @@ DeviceEvents
 | order by Timestamp asc
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F39 — `ClrUnbackedModuleLoaded` event with SharpChrome module reference visible in AdditionalFields or correlated alert details on as-pc1
+![F39 - ClrUnbackedModuleLoaded event with SharpChrome module reference visible in AdditionalFields or correlated alert details on as-pc1](../screenshots/section9_anti_forensics_memory/F39_sharpchrme.png)
 
 **Analyst Assessment:**
 SharpChrome targeting browser credentials massively expands the credential compromise scope beyond the SAM hive dump in Section 3. Any service for which `sophie.turner` had saved browser credentials on as-pc1 must be treated as compromised. This includes corporate email, cloud services, financial platforms, and any personal accounts accessed from a work device. All such credentials should be reset immediately.
@@ -1591,8 +1547,7 @@ DeviceEvents
     on $left.InitiatingProcessId == $right.NotepadPID
 ```
 
-**📸 Screenshot Reference:**
-> Screenshot F40 — `notepad.exe` confirmed as `InitiatingProcessFileName` in `ClrUnbackedModuleLoaded` event, with ProcessId matching the `notepad.exe ""` instance from F05
+![F40 - notepad.exe confirmed as InitiatingProcessFileName in ClrUnbackedModuleLoaded event, with ProcessId matching the notepad.exe "" instance from F05](../screenshots/section9_anti_forensics_memory/F40_host_process.png)
 
 **Analyst Assessment:**
 The correlation of the `notepad.exe ""` process from Section 1 with the SharpChrome injection host in Section 9 closes the full attack chain loop. This is the strongest evidence of pre-planned, operator-driven execution: `notepad.exe` was prepared as an injection vessel at the start of the intrusion and maintained that role throughout. This join query should be deployed as a persistent detection rule — the specific combination of `notepad.exe ""` spawned by a double-extension executable followed by `ClrUnbackedModuleLoaded` from the same process ID is a near-zero false-positive detection chain.
@@ -1693,8 +1648,6 @@ The Broker represents one of the most complete adversary lifecycle reconstructio
 Analyst confidence in the reconstructed timeline is **High**, supported by corroborating telemetry across five MDE data sources: `DeviceProcessEvents`, `DeviceNetworkEvents`, `DeviceFileEvents`, `DeviceLogonEvents`, and `DeviceEvents`. The confirmed editing of `BACS_Payments_Dec2025.ods` (evidenced by the LibreOffice lock file artifact in F33) elevates this intrusion beyond data theft to a potential financial fraud incident requiring immediate notification of the finance team and assessment of regulatory reporting obligations under UK GDPR. Recommended next steps include full forensic imaging of all three affected hosts before any remediation, simultaneous removal of all three persistence layers (AnyDesk, scheduled task, svc_backup account), enterprise-wide credential rotation, and submission of all IOCs to relevant threat intelligence sharing communities under TLP:AMBER.
 
 ---
-
-**TLP:AMBER — Distribution limited to participating organisations and authorised SOC personnel.**
 
 *Report prepared by: Carlos Funezsanchez | Version 3.0 | 25 February 2026*
 
