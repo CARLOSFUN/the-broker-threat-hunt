@@ -622,8 +622,9 @@ While `whoami.exe` is a low-severity individual event, in context it confirms ac
 DeviceProcessEvents
 | where Timestamp between (datetime(2026-01-15) .. datetime(2026-01-20))
 | where DeviceName =~ "as-pc1"
-| where FileName in~ ("net.exe", "net1.exe")
-    and ProcessCommandLine has "view"
+| where AccountName contains "sophie.turner"
+| where FileName contains "net.exe"
+    and InitiatingProcessFileName contains ("Daniel_Richardson_CV.pdf.exe")
 | project Timestamp, DeviceName, AccountName, FileName,
           ProcessCommandLine, InitiatingProcessFileName,
           InitiatingProcessCommandLine
@@ -657,9 +658,9 @@ The local `administrators` group was enumerated using `net localgroup administra
 DeviceProcessEvents
 | where Timestamp between (datetime(2026-01-15) .. datetime(2026-01-20))
 | where DeviceName =~ "as-pc1"
-| where FileName in~ ("net.exe", "net1.exe")
-    and ProcessCommandLine has_any ("localgroup", "administrators",
-                                    "domain admins", "group")
+| where AccountName contains "sophie.turner"
+| where FileName contains "net.exe"
+    and InitiatingProcessFileName contains ("Daniel_Richardson_CV.pdf.exe")
 | project Timestamp, DeviceName, AccountName, FileName,
           ProcessCommandLine, InitiatingProcessFileName,
           InitiatingProcessCommandLine
