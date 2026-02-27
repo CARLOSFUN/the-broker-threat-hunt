@@ -76,6 +76,18 @@
 
 ---
 
+## 📄 Read the Full Report
+
+<div align="center">
+
+[![View Full Report](https://img.shields.io/badge/📄%20View%20Full%20Report-Click%20Here-blue?style=for-the-badge)](report/The_Broker_Threat_Hunt_Report.md)
+
+*40 flags · 9 sections · KQL queries · screenshots · MITRE mapping · IOC table · recommendations*
+
+</div>
+
+---
+
 ## What's Inside
 
 ```
